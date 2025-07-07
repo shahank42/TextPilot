@@ -1,4 +1,13 @@
-# text-pilot
+# TextPilot
+
+AI co-pilot for your text messages
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/shahank42/text-pilot/refs/heads/master/.github/text-pilot.jpg" border="0"></
+</p>
+<br />
+
+(yes, that is an alternative client for WhatsApp Web)
 
 If you wanna try it out, run with:
 
@@ -9,7 +18,7 @@ docker compose up -d --build
 ## What's working
 
 - QR code log in to WhatsApp
-- Send and recieve text messages
+- Send and recieve text messages from WhatsApp
 
 ---
 
