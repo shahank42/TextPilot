@@ -15,15 +15,16 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "zod": "^3.25.16",
-    "@orpc/server": "^1.5.0",
-    "@orpc/client": "^1.5.0",
-    "hono": "^4.8.2",
-    "drizzle-orm": "^0.44.2",
+    "@ai-sdk/google": "^1.2.3",
     "@libsql/client": "^0.15.9",
+    "@orpc/client": "^1.5.0",
+    "@orpc/server": "^1.5.0",
     "ai": "^4.3.16",
-    "@ai-sdk/google": "^1.2.3"
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.44.2",
+    "hono": "^4.8.2",
+    "whatsapp-web.js": "^1.31.0",
+    "zod": "^3.25.16"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.11",
