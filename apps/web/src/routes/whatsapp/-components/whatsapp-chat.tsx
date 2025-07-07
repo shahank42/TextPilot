@@ -18,6 +18,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
   const [inputValue, setInputValue] = useState("");
@@ -41,15 +42,17 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
 
   return (
     <>
-      <div className="w-full h-svh flex flex-col ">
+      <div className="w-full h-svh flex flex-col">
         <ExpandableChatHeader>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between w-full gap-2">
             <div className="flex flex-col">
               <span className="font-medium">{chat.id}</span>
               <span className="text-xs">
                 active who knows how many mins ago
               </span>
             </div>
+
+            <ModeToggle />
           </div>
         </ExpandableChatHeader>
 
@@ -87,8 +90,8 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />
-                <div className="flex items-center p-3 pt-0">
-                  <Button variant="ghost" size="icon">
+                <div className="flex items-center p-3 pt-2">
+                  {/* <Button variant="ghost" size="icon">
                     <Paperclip className="size-4" />
                     <span className="sr-only">Attach file</span>
                   </Button>
@@ -96,7 +99,7 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
                   <Button variant="ghost" size="icon">
                     <Mic className="size-4" />
                     <span className="sr-only">Use Microphone</span>
-                  </Button>
+                  </Button> */}
 
                   <Button size="sm" className="ml-auto gap-1.5">
                     Send Message
