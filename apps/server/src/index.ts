@@ -12,11 +12,14 @@ import { stream } from "hono/streaming";
 const app = new Hono();
 
 app.use(logger());
-app.use("/*", cors({
-  origin: process.env.CORS_ORIGIN || "",
-  allowMethods: ["GET", "POST", "OPTIONS"],
-}));
-
+// app.use(
+//   "/*",
+//   cors({
+//     origin: process.env.CORS_ORIGIN || "http://localhost:4173",
+//     allowMethods: ["GET", "POST", "OPTIONS"],
+//   })
+// );
+app.use("/*", cors());
 
 const handler = new RPCHandler(appRouter);
 app.use("/rpc/*", async (c, next) => {
@@ -32,7 +35,6 @@ app.use("/rpc/*", async (c, next) => {
   await next();
 });
 
-
 app.post("/ai", async (c) => {
   const body = await c.req.json();
   const messages = body.messages || [];
@@ -45,7 +47,6 @@ app.post("/ai", async (c) => {
   c.header("Content-Type", "text/plain; charset=utf-8");
   return stream(c, (stream) => stream.pipe(result.toDataStream()));
 });
-
 
 app.get("/", (c) => {
   return c.text("OK");

@@ -4,6 +4,9 @@ import { EventEmitter } from "node:events";
 // const client = new Client({ puppeteer: {} });
 const client = new Client({
   authStrategy: new LocalAuth(),
+  puppeteer: {
+    args: ["--no-sandbox"],
+  },
 });
 
 let messageEvents = new EventEmitter();
