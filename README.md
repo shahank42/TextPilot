@@ -9,11 +9,24 @@ AI co-pilot for your text messages
 
 (yes, that is an alternative client for WhatsApp Web)
 
+I'm too poor to buy a VPS and host this, so I'm releasing this as a self-hostable solution that you can run on your own machine :-)
+
 If you wanna try it out, run with:
 
 ```bash
 docker compose up -d --build
 ```
+
+It'll take some time to build since it's using Puppeteer, takes around 5 minutes for a fresh build for me.
+
+Make sure porrd 4173 and 3000 are not being used on your device while you run the container!
+
+Once the container is up and running, go ahead and visit https://localhost:4173/whatsapp where you should get a QR code.
+
+(NOTE: If the QR Code isn't getting scanned by WhatsApp on your phone, try switching the website theme to light theme and it should work)
+
+Wait while the syncing takes place, and you should be presented with the chat screen.
+
 
 ## What's working
 
