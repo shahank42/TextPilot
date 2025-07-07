@@ -18,6 +18,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export interface RouterAppContext {
   orpc: typeof orpc;
@@ -50,19 +51,21 @@ function RootComponent() {
     select: (s) => s.isLoading,
   });
 
-  const [client] = useState<RouterClient<typeof appRouter>>(() => createORPCClient(link));
+  const [client] = useState<RouterClient<typeof appRouter>>(() =>
+    createORPCClient(link)
+  );
   const [orpcUtils] = useState(() => createTanstackQueryUtils(client));
 
   return (
     <>
       <HeadContent />
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
-            {isFetching ? <Loader /> : <Outlet />}
-          </div>
-          <Toaster richColors />
-        </ThemeProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <div className="grid grid-rows-[auto_1fr] h-svh">
+          {/* <Header /> */}
+          {isFetching ? <Loader /> : <Outlet />}
+        </div>
+        <Toaster richColors />
+      </ThemeProvider>
       <TanStackRouterDevtools position="bottom-left" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
     </>

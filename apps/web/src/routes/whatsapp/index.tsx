@@ -1,12 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WhatsappQRCode } from "./-components/whatsapp-qr-code";
-import {
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/utils/orpc";
-import { WhatsappClient } from "./-components/whatsapp-client";
+import { WhatsappChatLayout } from "./-components/whatsapp-chat-layout";
 
 export const Route = createFileRoute("/whatsapp/")({
   component: RouteComponent,
@@ -26,7 +22,7 @@ function RouteComponent() {
       ) : !isReadyQuery.data ? (
         <WhatsappQRCode />
       ) : (
-        <WhatsappClient />
+        <WhatsappChatLayout />
       )}
     </div>
   );

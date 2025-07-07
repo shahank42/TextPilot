@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatsappIndexRouteImport } from './routes/whatsapp/index'
 
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AiRoute = AiRouteImport.update({
   id: '/ai',
   path: '/ai',
@@ -32,35 +38,46 @@ const WhatsappIndexRoute = WhatsappIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai': typeof AiRoute
+  '/chat': typeof ChatRoute
   '/whatsapp': typeof WhatsappIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai': typeof AiRoute
+  '/chat': typeof ChatRoute
   '/whatsapp': typeof WhatsappIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ai': typeof AiRoute
+  '/chat': typeof ChatRoute
   '/whatsapp/': typeof WhatsappIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ai' | '/whatsapp'
+  fullPaths: '/' | '/ai' | '/chat' | '/whatsapp'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ai' | '/whatsapp'
-  id: '__root__' | '/' | '/ai' | '/whatsapp/'
+  to: '/' | '/ai' | '/chat' | '/whatsapp'
+  id: '__root__' | '/' | '/ai' | '/chat' | '/whatsapp/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiRoute: typeof AiRoute
+  ChatRoute: typeof ChatRoute
   WhatsappIndexRoute: typeof WhatsappIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ai': {
       id: '/ai'
       path: '/ai'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiRoute: AiRoute,
+  ChatRoute: ChatRoute,
   WhatsappIndexRoute: WhatsappIndexRoute,
 }
 export const routeTree = rootRouteImport
