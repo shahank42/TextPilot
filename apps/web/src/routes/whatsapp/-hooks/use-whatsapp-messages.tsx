@@ -5,6 +5,7 @@ import { whatsappMessagesAtom, selectedChatIdAtom } from "@/lib/atoms";
 import { useEffect, useMemo, useState } from "react";
 import type WAWebJS from "whatsapp-web.js";
 import type { ChatsListItem } from "../-components/whatsapp-chats-list";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export interface SelectedChatType {
   id: string;
@@ -19,8 +20,10 @@ export function useWhatsappMessages() {
   // State for all messages, the selected chat, and the new message input
   // const [messages, setMessages] = useState<WAWebJS.Message[]>([]);
   const [messages, setMessages] = useAtom(whatsappMessagesAtom);
-  const [selectedChatId, _] = useAtom(selectedChatIdAtom);
   const [inputValue, setInputValue] = useState("");
+
+  const [selectedChatId, setSelectedChatId] = useAtom(selectedChatIdAtom);
+  useHotkeys("esc", () => setSelectedChatId(null));
 
   useEffect(() => {
     if (messageQuery.data) {
