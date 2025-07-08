@@ -31,6 +31,14 @@ export function useWhatsappMessages() {
     })
   );
 
+  // Fire a pfp query whenever a message is recieved
+  const pfpQuery = useQuery(
+    orpc.whatsapp.getPfp.queryOptions({
+      input: { id: messageQuery.data?.id.remote! },
+      enabled: !!messageQuery.data?.id.remote,
+    })
+  );
+
   // State for all messages, the selected chat, and the new message input
   // const [messages, setMessages] = useState<WAWebJS.Message[]>([]);
   const [messages, setMessages] = useAtom(whatsappMessagesAtom);

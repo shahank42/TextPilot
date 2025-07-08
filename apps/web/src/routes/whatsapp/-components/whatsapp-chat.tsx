@@ -18,8 +18,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ModeToggle } from "@/components/mode-toggle";
 import { WhatsappChatHeader } from "./whatsapp-chat-header";
+import { WhatsappChatMessageBubble } from "./whatsapp-chat-message-bubble";
 
 export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
   const [inputValue, setInputValue] = useState("");
@@ -54,17 +54,10 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
             <ScrollArea className="h-[calc(100dvh-69px-147px)]">
               <ChatMessageList>
                 {chat.messages.map((message) => (
-                  <ChatBubble
+                  <WhatsappChatMessageBubble
                     key={message.id._serialized}
-                    variant={message.fromMe ? "sent" : "received"}
-                  >
-                    <ChatBubbleAvatar fallback={message.fromMe ? "ME" : "OP"} />
-                    <ChatBubbleMessage
-                      variant={message.fromMe ? "sent" : "received"}
-                    >
-                      {message.body}
-                    </ChatBubbleMessage>
-                  </ChatBubble>
+                    message={message}
+                  />
                 ))}
               </ChatMessageList>
             </ScrollArea>

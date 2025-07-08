@@ -18,7 +18,7 @@ export const whatsappRouter = {
       await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   }),
-  isReadySSE: publicProcedure.handler(async function* ({ input, lastEventId }) {
+  isReadySSE: publicProcedure.handler(async function* () {
     while (true) {
       yield whatsappClientState.isReady;
       if (whatsappClientState.isReady) return;
@@ -55,10 +55,16 @@ export const whatsappRouter = {
   getContact: publicProcedure
     .input(z.object({ id: z.string() }))
     .handler(async ({ input }) => {
-      console.log("[WWEBJS] contact id:", input.id);
       const contact = await client.getContactById(input.id);
       console.log("[WWEBJS] contact:", contact);
       return contact;
+    }),
+
+  getPfp: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .handler(async ({ input }) => {
+      const pfp = await client.getProfilePicUrl(input.id);
+      return pfp;
     }),
 
   sendMessage: publicProcedure
