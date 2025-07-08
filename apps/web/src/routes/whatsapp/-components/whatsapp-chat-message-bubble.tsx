@@ -79,17 +79,30 @@ export function WhatsappChatMessageBubble({
             <>Error loading quoted message</>
           ) : (
             <div
-              className={cn("mb-2 border-l-2 pl-2", {
-                "border-accent/50": message.fromMe,
-                "border-accent-foreground/70": !message.fromMe,
+              className={cn("mb-2 border-l-2 pl-2 ml-0.5", {
+                "border-secondary-foreground/50 dark:border-accent-foreground/60":
+                  message.fromMe,
+                "border-accent-foreground/60 dark:border-accent/70":
+                  !message.fromMe,
               })}
             >
-              <p className="border-accent text-xs">
+              <p
+                className={cn("border-accent text-xs", {
+                  "text-secondary-foreground/90": !message.fromMe,
+                  "text-primary-foreground": message.fromMe,
+                })}
+              >
                 {quotedMessageQuery.data.fromMe
                   ? "You"
                   : quotedMessageDisplayName}
               </p>
-              <p className="line-clamp-2 text-sm">
+              <p
+                className={cn("line-clamp-2 text-sm", {
+                  "text-muted-foreground": !message.fromMe,
+                  "text-secondary-foreground/75 dark:text-secondary":
+                    message.fromMe,
+                })}
+              >
                 {quotedMessageQuery.data.body}
               </p>
             </div>
@@ -97,7 +110,7 @@ export function WhatsappChatMessageBubble({
         ) : (
           <></>
         )}
-        {message.body}
+        <span className="text-sm leading-tight">{message.body}</span>
       </ChatBubbleMessage>
     </ChatBubble>
   );
