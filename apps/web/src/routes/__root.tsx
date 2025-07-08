@@ -1,73 +1,73 @@
+import { createORPCClient } from "@orpc/client";
+import type { RouterClient } from "@orpc/server";
+import { createTanstackQueryUtils } from "@orpc/tanstack-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {
+	createRootRouteWithContext,
+	HeadContent,
+	Outlet,
+	useRouterState,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useState } from "react";
 import Header from "@/components/header";
 import Loader from "@/components/loader";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { link, orpc } from "@/utils/orpc";
-import type { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useState } from "react";
-import type { RouterClient } from "@orpc/server";
-import { createTanstackQueryUtils } from "@orpc/tanstack-query";
+import { link, type orpc } from "@/utils/orpc";
 import type { appRouter } from "../../../server/src/routers";
-import { createORPCClient } from "@orpc/client";
-import {
-  HeadContent,
-  Outlet,
-  createRootRouteWithContext,
-  useRouterState,
-} from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export interface RouterAppContext {
-  orpc: typeof orpc;
-  queryClient: QueryClient;
+	orpc: typeof orpc;
+	queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-  component: RootComponent,
-  head: () => ({
-    meta: [
-      {
-        title: "My App",
-      },
-      {
-        name: "description",
-        content: "My App is a web application",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        href: "/favicon.ico",
-      },
-    ],
-  }),
+	component: RootComponent,
+	head: () => ({
+		meta: [
+			{
+				title: "My App",
+			},
+			{
+				name: "description",
+				content: "My App is a web application",
+			},
+		],
+		links: [
+			{
+				rel: "icon",
+				href: "/favicon.ico",
+			},
+		],
+	}),
 });
 
 function RootComponent() {
-  const isFetching = useRouterState({
-    select: (s) => s.isLoading,
-  });
+	const isFetching = useRouterState({
+		select: (s) => s.isLoading,
+	});
 
-  const [client] = useState<RouterClient<typeof appRouter>>(() =>
-    createORPCClient(link)
-  );
-  const [orpcUtils] = useState(() => createTanstackQueryUtils(client));
+	const [client] = useState<RouterClient<typeof appRouter>>(() =>
+		createORPCClient(link)
+	);
+	const [orpcUtils] = useState(() => createTanstackQueryUtils(client));
 
-  return (
-    <>
-      <HeadContent />
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className="grid grid-rows-[auto_1fr] h-svh">
-          {/* <Header /> */}
-          {isFetching ? <Loader /> : <Outlet />}
-        </div>
-        <Toaster richColors />
-      </ThemeProvider>
-      <TanStackRouterDevtools position="bottom-left" />
-      <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
-    </>
-  );
+	return (
+		<>
+			<HeadContent />
+			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+				<div className="grid h-svh grid-rows-[auto_1fr]">
+					{/* <Header /> */}
+					{isFetching ? <Loader /> : <Outlet />}
+				</div>
+				<Toaster richColors />
+			</ThemeProvider>
+			<TanStackRouterDevtools position="bottom-left" />
+			<ReactQueryDevtools buttonPosition="bottom-right" position="bottom" />
+		</>
+	);
 }

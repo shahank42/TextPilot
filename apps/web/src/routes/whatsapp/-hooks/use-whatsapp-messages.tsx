@@ -1,74 +1,109 @@
-import { orpc } from "@/utils/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import { whatsappMessagesAtom, selectedChatIdAtom } from "@/lib/atoms";
 import { useEffect, useMemo, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import type WAWebJS from "whatsapp-web.js";
-import type { ChatsListItem } from "../-components/whatsapp-chats-list";
+import {
+	replyingToAtom,
+	selectedChatIdAtom,
+	whatsappMessagesAtom,
+} from "@/lib/atoms";
+import { orpc } from "@/utils/orpc";
 
 export interface SelectedChatType {
-  id: string;
-  messages: WAWebJS.Message[];
+	id: string;
+	messages: WAWebJS.Message[];
+}
+
+export interface ChatsListItem {
+	id: string;
+	displayName: string;
+	lastMessageBody: string;
+	timestamp: number;
 }
 
 export function useWhatsappMessages() {
-  const messageQuery = useQuery(
-    orpc.whatsapp.messagesSSE.experimental_liveOptions()
-  );
+	const messageQuery = useQuery(
+		orpc.whatsapp.messagesSSE.experimental_liveOptions()
+	);
 
-  // State for all messages, the selected chat, and the new message input
-  // const [messages, setMessages] = useState<WAWebJS.Message[]>([]);
-  const [messages, setMessages] = useAtom(whatsappMessagesAtom);
-  const [selectedChatId, _] = useAtom(selectedChatIdAtom);
-  const [inputValue, setInputValue] = useState("");
+	// Fire a contact query whenever a message is recieved
+	const contactQuery = useQuery(
+		orpc.whatsapp.getContact.queryOptions({
+			input: { id: messageQuery.data?.id.remote! },
+			enabled: !!messageQuery.data?.id.remote,
+		})
+	);
 
-  useEffect(() => {
-    if (messageQuery.data) {
-      // `data` is the latest message. We maintain an array in our state.
-      setMessages((prevMessages) => {
-        if (prevMessages.find((msg) => msg.id.id === messageQuery.data.id.id)) {
-          return prevMessages;
-        }
-        return [...prevMessages, messageQuery.data];
-      });
-    }
-  }, [messageQuery.data]);
+	// Fire a pfp query whenever a message is recieved
+	const pfpQuery = useQuery(
+		orpc.whatsapp.getPfp.queryOptions({
+			input: { id: messageQuery.data?.id.remote! },
+			enabled: !!messageQuery.data?.id.remote,
+		})
+	);
 
-  // Derive a list of unique chats from the messages
-  const chats = useMemo(() => {
-    const chatMap = new Map<string, { lastMessage: WAWebJS.Message }>();
-    messages.forEach((msg) => {
-      const chatId = msg.id.remote;
-      const existing = chatMap.get(chatId);
-      if (!existing || msg.timestamp > existing.lastMessage.timestamp) {
-        chatMap.set(chatId, { lastMessage: msg });
-      }
-    });
+	const [messages, setMessages] = useAtom(whatsappMessagesAtom);
+	const [selectedChatId, setSelectedChatId] = useAtom(selectedChatIdAtom);
+	const [replyingTo, setReplyingTo] = useAtom(replyingToAtom);
 
-    return Array.from(chatMap.values())
-      .sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp)
-      .map(
-        (chat) =>
-          ({
-            id: chat.lastMessage.id.remote,
-            displayName: chat.lastMessage.id.remote,
-            lastMessageBody: chat.lastMessage.body,
-            timestamp: chat.lastMessage.timestamp,
-          }) as ChatsListItem
-      );
-  }, [messages]);
+	useHotkeys("esc", () => {
+		if (replyingTo) setReplyingTo(null);
+		else setSelectedChatId(null);
+	});
 
-  // Filter messages to show only those for the selected chat
-  const selectedChatMessages = messages.filter(
-    (msg) => msg.id.remote === selectedChatId
-  );
+	useEffect(() => {
+		if (messageQuery.data) {
+			// `data` is the latest message. We maintain an array in our state.
+			setMessages((prevMessages) => {
+				if (prevMessages.find((msg) => msg.id.id === messageQuery.data.id.id)) {
+					return prevMessages;
+				}
+				return [...prevMessages, messageQuery.data];
+			});
+		}
+	}, [messageQuery.data]);
 
-  const selectedChat: SelectedChatType | null = selectedChatId
-    ? {
-        id: selectedChatId,
-        messages: selectedChatMessages,
-      }
-    : null;
+	// Derive a list of unique chats from the messages
+	const chats = useMemo(() => {
+		const chatMap = new Map<string, { lastMessage: WAWebJS.Message }>();
+		messages.forEach((msg) => {
+			const chatId = msg.id.remote;
+			const existing = chatMap.get(chatId);
+			if (!existing || msg.timestamp > existing.lastMessage.timestamp) {
+				chatMap.set(chatId, { lastMessage: msg });
+			}
+		});
 
-  return { messages, chats, selectedChat };
+		return Array.from(chatMap.values())
+			.sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp)
+			.map(
+				(chat) =>
+					({
+						id: chat.lastMessage.id.remote,
+						displayName: chat.lastMessage.id.remote,
+						lastMessageBody: chat.lastMessage.body,
+						timestamp: chat.lastMessage.timestamp,
+						//
+					}) as ChatsListItem
+			);
+	}, [messages]);
+
+	useEffect(() => {
+		setReplyingTo(null);
+	}, [selectedChatId]);
+
+	// Filter messages to show only those for the selected chat
+	const selectedChatMessages = messages.filter(
+		(msg) => msg.id.remote === selectedChatId
+	);
+
+	const selectedChat: SelectedChatType | null = selectedChatId
+		? {
+				id: selectedChatId,
+				messages: selectedChatMessages,
+			}
+		: null;
+
+	return { messages, chats, selectedChat };
 }

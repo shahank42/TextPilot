@@ -27,11 +27,11 @@ Once the container is up and running, go ahead and visit https://localhost:4173/
 
 Wait while the syncing takes place, and you should be presented with the chat screen.
 
-
 ## What's working
 
 - QR code log in to WhatsApp
 - Send and recieve text messages from WhatsApp
+- Quote and reply to messages
 
 ---
 
