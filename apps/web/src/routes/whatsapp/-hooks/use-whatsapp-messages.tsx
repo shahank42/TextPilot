@@ -89,6 +89,10 @@ export function useWhatsappMessages() {
       );
   }, [messages]);
 
+  useEffect(() => {
+    setReplyingTo(null);
+  }, [selectedChatId]);
+
   // Filter messages to show only those for the selected chat
   const selectedChatMessages = messages.filter(
     (msg) => msg.id.remote === selectedChatId
