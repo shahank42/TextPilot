@@ -66,6 +66,14 @@ export const whatsappRouter = {
       return pfp;
     }),
 
+  getQuotedMessage: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .handler(async ({ input }) => {
+      const message = await client.getMessageById(input.id);
+      const quotedMessage = await message.getQuotedMessage();
+      return quotedMessage;
+    }),
+
   sendMessage: publicProcedure
     .input(
       z.object({

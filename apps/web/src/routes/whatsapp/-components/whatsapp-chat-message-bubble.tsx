@@ -5,7 +5,7 @@ import {
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export function WhatsappChatMessageBubble({
@@ -27,6 +27,20 @@ export function WhatsappChatMessageBubble({
     })
   );
 
+  const quotedMessageQuery = useQuery(
+    orpc.whatsapp.getQuotedMessage.queryOptions({
+      input: { id: message.id._serialized! },
+      enabled: message.hasQuotedMsg,
+    })
+  );
+
+  const quotedMessageContactQuery = useQuery(
+    orpc.whatsapp.getContact.queryOptions({
+      input: { id: quotedMessageQuery.data?.from! },
+      enabled: message.hasQuotedMsg,
+    })
+  );
+
   const displayName = contactQuery.isPending
     ? "Loading..."
     : contactQuery.isError
@@ -35,6 +49,15 @@ export function WhatsappChatMessageBubble({
         ? contactQuery.data.verifiedName
         : // TODO: display name for non-business users
           contactQuery.data.pushname;
+
+  const quotedMessageDisplayName = quotedMessageContactQuery.isPending
+    ? "Loading..."
+    : quotedMessageContactQuery.isError
+      ? "Error"
+      : quotedMessageContactQuery.data.isBusiness
+        ? quotedMessageContactQuery.data.verifiedName
+        : // TODO: display name for non-business users
+          quotedMessageContactQuery.data.pushname;
 
   return (
     <ChatBubble
@@ -49,6 +72,31 @@ export function WhatsappChatMessageBubble({
         className="cursor-pointer"
         variant={message.fromMe ? "sent" : "received"}
       >
+        {message.hasQuotedMsg ? (
+          quotedMessageQuery.isPending ? (
+            <>Loading quoted message...</>
+          ) : quotedMessageQuery.isError ? (
+            <>Error loading quoted message</>
+          ) : (
+            <div
+              className={cn("border-l-2 pl-2 mb-2", {
+                "border-accent/50": message.fromMe,
+                "border-accent-foreground/70": !message.fromMe,
+              })}
+            >
+              <p className="text-xs border-accent">
+                {quotedMessageQuery.data.fromMe
+                  ? "You"
+                  : quotedMessageDisplayName}
+              </p>
+              <p className="text-sm line-clamp-2">
+                {quotedMessageQuery.data.body}
+              </p>
+            </div>
+          )
+        ) : (
+          <></>
+        )}
         {message.body}
       </ChatBubbleMessage>
     </ChatBubble>
