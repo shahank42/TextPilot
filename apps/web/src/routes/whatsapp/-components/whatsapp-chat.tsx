@@ -22,6 +22,8 @@ import { orpc } from "@/utils/orpc";
 import type { SelectedChatType } from "../-hooks/use-whatsapp-messages";
 import { WhatsappChatHeader } from "./whatsapp-chat-header";
 import { WhatsappChatMessageBubble } from "./whatsapp-chat-message-bubble";
+import { WhatsappReplyQuote } from "./whatsapp-reply-quote";
+import { cn } from "@/lib/utils";
 
 export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
   const [inputValue, setInputValue] = useState("");
@@ -59,37 +61,38 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
           direction="horizontal"
         >
           <ResizablePanel className="flex h-[calc(100dvh-69px)] flex-col">
-            <ScrollArea className="h-[calc(100dvh-69px-147px)]">
+            <ScrollArea
+              className={cn({
+                "h-[calc(100dvh-69px-143px+8px)]": !replyingTo,
+                "h-[calc(100dvh-69px-32px-147px-69px+32px)] ": replyingTo,
+              })}
+            >
               <ChatMessageList>
                 {chat.messages.map((message) => (
                   <WhatsappChatMessageBubble
                     key={message.id._serialized}
                     message={message}
                     onDoubleClick={() => {
-                      setReplyingTo(message);
+                      if (replyingTo && replyingTo.id === message.id)
+                        setReplyingTo(null);
+                      else setReplyingTo(message);
                     }}
                   />
                 ))}
               </ChatMessageList>
             </ScrollArea>
 
-            <div className="w-full border-t px-7 py-5">
+            <div
+              className={cn("w-full flex flex-col border-t px-4 pb-4 pt-4", {
+                "h-[calc(69px+147px-73px-8px)]": !replyingTo,
+                "h-[calc(69px+147px+32px-32px)] justify-between": replyingTo,
+              })}
+            >
               {replyingTo && (
-                <div className="flex items-center justify-between rounded-t-lg bg-secondary p-2">
-                  <div>
-                    <p className="font-bold text-sm">
-                      Replying to {replyingTo.from}
-                    </p>
-                    <p className="truncate text-sm">{replyingTo.body}</p>
-                  </div>
-                  <Button
-                    onClick={() => setReplyingTo(null)}
-                    size="icon"
-                    variant="ghost"
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
+                <WhatsappReplyQuote
+                  message={replyingTo}
+                  onClose={() => setReplyingTo(null)}
+                />
               )}
               <form
                 className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
