@@ -43,6 +43,7 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
     const sentMessage = await orpc.whatsapp.sendMessage.call({
       to: chat.id,
       body: inputValue,
+      quotedMessageId: replyingTo?.id._serialized,
     });
 
     console.log(sentMessage);
