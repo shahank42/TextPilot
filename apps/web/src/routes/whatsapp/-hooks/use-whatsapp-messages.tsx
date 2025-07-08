@@ -4,7 +4,6 @@ import { useAtom } from "jotai";
 import { whatsappMessagesAtom, selectedChatIdAtom } from "@/lib/atoms";
 import { useEffect, useMemo, useState } from "react";
 import type WAWebJS from "whatsapp-web.js";
-import type { ChatsListItem } from "../-components/whatsapp-chats-list";
 import { useHotkeys } from "react-hotkeys-hook";
 
 export interface SelectedChatType {
@@ -12,9 +11,24 @@ export interface SelectedChatType {
   messages: WAWebJS.Message[];
 }
 
+export interface ChatsListItem {
+  id: string;
+  displayName: string;
+  lastMessageBody: string;
+  timestamp: number;
+}
+
 export function useWhatsappMessages() {
   const messageQuery = useQuery(
     orpc.whatsapp.messagesSSE.experimental_liveOptions()
+  );
+
+  // Fire a contact query whenever a message is recieved
+  const contactQuery = useQuery(
+    orpc.whatsapp.getContact.queryOptions({
+      input: { id: messageQuery.data?.id.remote! },
+      enabled: !!messageQuery.data?.id.remote,
+    })
   );
 
   // State for all messages, the selected chat, and the new message input
@@ -57,6 +71,7 @@ export function useWhatsappMessages() {
             displayName: chat.lastMessage.id.remote,
             lastMessageBody: chat.lastMessage.body,
             timestamp: chat.lastMessage.timestamp,
+            //
           }) as ChatsListItem
       );
   }, [messages]);

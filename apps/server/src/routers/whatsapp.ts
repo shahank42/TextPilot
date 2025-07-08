@@ -52,6 +52,15 @@ export const whatsappRouter = {
     }
   }),
 
+  getContact: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .handler(async ({ input }) => {
+      console.log("[WWEBJS] contact id:", input.id);
+      const contact = await client.getContactById(input.id);
+      console.log("[WWEBJS] contact:", contact);
+      return contact;
+    }),
+
   sendMessage: publicProcedure
     .input(
       z.object({

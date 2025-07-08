@@ -18,17 +18,8 @@ export function WhatsappChatLayout() {
 
       <SidebarInset>
         {selectedChat === null ? (
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="flex items-center justify-between w-full gap-2">
-              <div className="flex flex-col">
-                <span className="font-medium">No chat selected</span>
-                <span className="text-xs">
-                  active who knows how many mins ago
-                </span>
-              </div>
-
-              <ModeToggle />
-            </div>
+          <div className="flex items-center justify-end p-4 w-full gap-2">
+            <ModeToggle />
           </div>
         ) : (
           <WhatsappChat chat={selectedChat} />

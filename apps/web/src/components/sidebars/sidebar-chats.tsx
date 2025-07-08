@@ -24,9 +24,9 @@ export function SidebarChats({
 }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
-      <SidebarHeader className="py-5">
+      {/* <SidebarHeader className="py-5">
         <span className="text-2xl text-center">My WhatsApp Chats</span>
-      </SidebarHeader>
+      </SidebarHeader> */}
 
       <SidebarContent>
         <SidebarGroup className="p-0 border-y">

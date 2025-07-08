@@ -19,6 +19,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ModeToggle } from "@/components/mode-toggle";
+import { WhatsappChatHeader } from "./whatsapp-chat-header";
 
 export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
   const [inputValue, setInputValue] = useState("");
@@ -43,25 +44,14 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
   return (
     <>
       <div className="w-full h-svh flex flex-col">
-        <ExpandableChatHeader>
-          <div className="flex items-center justify-between w-full gap-2">
-            <div className="flex flex-col">
-              <span className="font-medium">{chat.id}</span>
-              <span className="text-xs">
-                active who knows how many mins ago
-              </span>
-            </div>
-
-            <ModeToggle />
-          </div>
-        </ExpandableChatHeader>
+        <WhatsappChatHeader selectedChatId={chat.id} />
 
         <ResizablePanelGroup
           direction="horizontal"
-          className="h-[calc(100dvh-73px)]"
+          className="h-[calc(100dvh-69px)]"
         >
-          <ResizablePanel className="flex flex-col h-[calc(100dvh-73px)]">
-            <ScrollArea className="h-[calc(100dvh-73px-147px)]">
+          <ResizablePanel className="flex flex-col h-[calc(100dvh-69px)]">
+            <ScrollArea className="h-[calc(100dvh-69px-147px)]">
               <ChatMessageList>
                 {chat.messages.map((message) => (
                   <ChatBubble
@@ -81,7 +71,7 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
 
             <div className="w-full py-5 px-7 border-t">
               <form
-                className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1"
+                className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
                 onSubmit={handleSendMessage}
               >
                 <ChatInput
