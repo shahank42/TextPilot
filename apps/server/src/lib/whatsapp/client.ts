@@ -1,69 +1,70 @@
-import WAWebJS, { Client, LocalAuth } from "whatsapp-web.js";
 import { EventEmitter } from "node:events";
+import type WAWebJS from "whatsapp-web.js";
+import { Client, LocalAuth } from "whatsapp-web.js";
 
 // const client = new Client({ puppeteer: {} });
 const client = new Client({
-  authStrategy: new LocalAuth(),
-  puppeteer: {
-    args: ["--no-sandbox"],
-  },
+	authStrategy: new LocalAuth(),
+	puppeteer: {
+		args: ["--no-sandbox"],
+	},
 });
 
-let messageEvents = new EventEmitter();
+const messageEvents = new EventEmitter();
 
 const whatsappClientState: {
-  qrCode: string | null;
-  authData: {
-    browserId: string;
-    secretBundle: string;
-    token1: string;
-    token2: string;
-  } | null;
-  isReady: boolean;
-  messages: WAWebJS.Message[];
+	qrCode: string | null;
+	authData: {
+		browserId: string;
+		secretBundle: string;
+		token1: string;
+		token2: string;
+	} | null;
+	isReady: boolean;
+	messages: WAWebJS.Message[];
 } = {
-  qrCode: null,
-  authData: null,
-  isReady: false,
-  messages: [],
+	qrCode: null,
+	authData: null,
+	isReady: false,
+	messages: [],
 };
 
 client.once("ready", () => {
-  console.log("[WWEBJS] Client is ready!");
-  whatsappClientState.isReady = true;
+	console.log("[WWEBJS] Client is ready!");
+	whatsappClientState.isReady = true;
 });
 
 client.on("qr", (qr) => {
-  console.log("[WWEBJS] QR code:", qr);
-  whatsappClientState.qrCode = qr;
+	console.log("[WWEBJS] QR code:", qr);
+	whatsappClientState.qrCode = qr;
 });
 
 client.on("authenticated", async (data) => {
-  console.log("[WWEBJS] Successfully authenticated!");
-  if (data) {
-    whatsappClientState.authData = {
-      browserId: data.WABrowserId,
-      secretBundle: data.WASecretBundle,
-      token1: data.WAToken1,
-      token2: data.WAToken2,
-    };
+	console.log("[WWEBJS] Successfully authenticated!");
+	if (data) {
+		whatsappClientState.authData = {
+			browserId: data.WABrowserId,
+			secretBundle: data.WASecretBundle,
+			token1: data.WAToken1,
+			token2: data.WAToken2,
+		};
 
-    console.log(whatsappClientState.authData);
-  }
-  // console.log("getting chats...");
-  // const chats = await client.getChats();
-  // console.log(chats);
+		console.log(whatsappClientState.authData);
+	}
+	// console.log("getting chats...");
+	// const chats = await client.getChats();
+	// console.log(chats);
 });
 
 client.on("message", async (message) => {
-  console.log("[WWEBJS] MESSAGE from ", message.author, ":", message.body);
-  whatsappClientState.messages.push(message);
-  messageEvents.emit("newMessage", message);
-  // const chat = await message.getChat();
-  // const sent = await client.sendMessage(
-  //   `${chat.id.user}@${chat.id.server}`,
-  //   "ping"
-  // );
+	console.log("[WWEBJS] MESSAGE from ", message.author, ":", message.body);
+	whatsappClientState.messages.push(message);
+	messageEvents.emit("newMessage", message);
+	// const chat = await message.getChat();
+	// const sent = await client.sendMessage(
+	//   `${chat.id.user}@${chat.id.server}`,
+	//   "ping"
+	// );
 });
 
 // console.log("getting chats...");
