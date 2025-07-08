@@ -10,8 +10,10 @@ import { orpc } from "@/utils/orpc";
 
 export function WhatsappChatMessageBubble({
 	message,
+	onDoubleClick,
 }: {
 	message: WAWebJS.Message;
+	onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 }) {
 	const contactQuery = useQuery(
 		orpc.whatsapp.getContact.queryOptions({
@@ -35,7 +37,7 @@ export function WhatsappChatMessageBubble({
 					contactQuery.data.pushname;
 
 	return (
-		<ChatBubble variant={message.fromMe ? "sent" : "received"}>
+		<ChatBubble variant={message.fromMe ? "sent" : "received"} onDoubleClick={onDoubleClick}>
 			<ChatBubbleAvatar
 				fallback={getInitials(displayName)}
 				src={pfpQuery.data}
