@@ -69,17 +69,27 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
               })}
             >
               <ChatMessageList>
-                {chat.messages.map((message) => (
-                  <WhatsappChatMessageBubble
-                    key={message.id._serialized}
-                    message={message}
-                    onClick={() => {
-                      if (replyingTo && replyingTo.id === message.id)
-                        setReplyingTo(null);
-                      else setReplyingTo(message);
-                    }}
-                  />
-                ))}
+                {chat.messages.map((message, index) => {
+                  const previousMessage = chat.messages[index - 1];
+                  const nextMessage = chat.messages[index + 1];
+
+                  const isFirstInGroup = !previousMessage || previousMessage.from !== message.from;
+                  const isLastInGroup = !nextMessage || nextMessage.from !== message.from;
+
+                  return (
+                    <WhatsappChatMessageBubble
+                      key={message.id._serialized}
+                      message={message}
+                      isFirstInGroup={isFirstInGroup}
+                      isLastInGroup={isLastInGroup}
+                      onClick={() => {
+                        if (replyingTo && replyingTo.id === message.id)
+                          setReplyingTo(null);
+                        else setReplyingTo(message);
+                      }}
+                    />
+                  );
+                })}
               </ChatMessageList>
             </ScrollArea>
 

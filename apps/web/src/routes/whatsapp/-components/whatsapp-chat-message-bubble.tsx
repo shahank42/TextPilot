@@ -10,9 +10,13 @@ import { orpc } from "@/utils/orpc";
 
 export function WhatsappChatMessageBubble({
   message,
+  isFirstInGroup,
+  isLastInGroup,
   onClick,
 }: {
   message: WAWebJS.Message;
+  isFirstInGroup: boolean;
+  isLastInGroup: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 }) {
   const contactQuery = useQuery(
@@ -63,13 +67,19 @@ export function WhatsappChatMessageBubble({
     <ChatBubble
       onClick={onClick}
       variant={message.fromMe ? "sent" : "received"}
+      className={cn({ "-mt-5": !isFirstInGroup })}
     >
       <ChatBubbleAvatar
         fallback={getInitials(displayName)}
         src={pfpQuery.data}
+        className={cn({ invisible: !isLastInGroup })}
       />
+
       <ChatBubbleMessage
-        className="cursor-pointer"
+        className={cn("cursor-pointer", {
+          "rounded-tl-none": !isFirstInGroup && !message.fromMe,
+          "rounded-tr-none": !isFirstInGroup && message.fromMe,
+        })}
         variant={message.fromMe ? "sent" : "received"}
       >
         {message.hasQuotedMsg ? (
