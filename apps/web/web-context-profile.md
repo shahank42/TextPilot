@@ -51,10 +51,16 @@ The application relies heavily on Server-Sent Events (SSE) for real-time communi
     -   Incoming messages are stored in a global Jotai atom: `whatsappMessagesAtom`.
     -   The hook derives a list of unique chats from all messages and provides the currently selected chat's data to the UI.
 
+3.  **Unread Message Tracking**:
+    -   When a new message arrives via the SSE connection, a check is performed within the `useWhatsappMessages` hook.
+    -   If the message is not from the current user (`!fromMe`) and does not belong to the currently selected chat, its count is incremented in the `unreadCountsAtom`.
+    -   When a user clicks on a chat, the `useEffect` watching `selectedChatId` fires and clears the unread count for that chat ID in the `unreadCountsAtom`.
+    -   The `WhatsappChatsListItem` component reads the `unreadCountsAtom` to display a badge with the number of unread messages and to make the last message text bold.
+
 ### Component Breakdown
 
 -   **`WhatsappChatLayout.tsx`**: The main layout for the chat UI. It displays a list of chats on the left (`ChatsList`) and the active chat window on the right (`WhatsappChat`).
--   **`ChatsList.tsx` / `WhatsappChatsListItem.tsx`**: Renders the list of conversations. Clicking an item updates the `selectedChatIdAtom`, which causes the main chat view to update.
+-   **`ChatsList.tsx` / `WhatsappChatsListItem.tsx`**: Renders the list of conversations. Clicking an item updates the `selectedChatIdAtom`, which causes the main chat view to update. It also displays the unread message count and styling.
 -   **`WhatsappChat.tsx`**: The component for the active conversation.
     -   It displays all messages for the `selectedChatId`.
     -   It uses `WhatsappChatMessageBubble` to render each message.
@@ -69,3 +75,4 @@ Defined in `src/lib/atoms.ts`:
 -   **`whatsappMessagesAtom`**: `atom<WAWebJS.Message[]>` - The central store for all received WhatsApp messages.
 -   **`selectedChatIdAtom`**: `atom<string | null>` - Stores the ID of the currently active conversation. This is written to by `WhatsappChatsListItem` and read by `useWhatsappMessages` to filter messages.
 -   **`replyingToAtom`**: `atom<WAWebJS.Message | null>` - Stores the message object that the user is currently replying to. This is used by `WhatsappChat` to show a reply preview and send the reply context to the backend.
+-   **`unreadCountsAtom`**: `atom<Record<string, number>>` - Stores a map of `chatId` to the number of unread messages for that chat. Used to display unread indicators in the UI.
