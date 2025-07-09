@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import type WAWebJS from "whatsapp-web.js";
 import {
+	addNewMessageAtom,
 	replyingToAtom,
 	selectedChatIdAtom,
 	unreadCountsAtom,
@@ -44,15 +45,11 @@ export function useWhatsappMessages() {
 		})
 	);
 
-	const [messages, setMessages] = useAtom(whatsappMessagesAtom);
+	const [messages] = useAtom(whatsappMessagesAtom);
 	const [selectedChatId, setSelectedChatId] = useAtom(selectedChatIdAtom);
 	const [replyingTo, setReplyingTo] = useAtom(replyingToAtom);
 	const [, setUnreadCounts] = useAtom(unreadCountsAtom);
-
-	const selectedChatIdRef = useRef(selectedChatId);
-	useEffect(() => {
-		selectedChatIdRef.current = selectedChatId;
-	}, [selectedChatId]);
+	const [, addNewMessage] = useAtom(addNewMessageAtom);
 
 	useHotkeys("esc", () => {
 		if (replyingTo) setReplyingTo(null);
@@ -61,27 +58,9 @@ export function useWhatsappMessages() {
 
 	useEffect(() => {
 		if (messageQuery.data) {
-			setMessages((prevMessages) => {
-				if (
-					prevMessages.find((msg) => msg.id.id === messageQuery.data.id.id)
-				) {
-					return prevMessages;
-				}
-
-				if (!messageQuery.data.fromMe) {
-					const chatId = messageQuery.data.id.remote;
-					if (chatId !== selectedChatIdRef.current) {
-						setUnreadCounts((prev) => ({
-							...prev,
-							[chatId]: (prev[chatId] || 0) + 1,
-						}));
-					}
-				}
-
-				return [...prevMessages, messageQuery.data];
-			});
+			addNewMessage(messageQuery.data);
 		}
-	}, [messageQuery.data, setMessages, setUnreadCounts]);
+	}, [messageQuery.data, addNewMessage]);
 
 	// Derive a list of unique chats from the messages
 	const chats = useMemo(() => {
