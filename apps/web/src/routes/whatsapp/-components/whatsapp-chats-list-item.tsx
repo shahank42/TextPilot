@@ -1,13 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { selectedChatIdAtom } from "@/lib/atoms";
-import { getInitials } from "@/lib/utils";
+import { selectedChatIdAtom, unreadCountsAtom } from "@/lib/atoms";
+import { cn, getInitials } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 import type { ChatsListItem } from "../-hooks/use-whatsapp-messages";
 
 export function WhatsappChatsListItem({ message }: { message: ChatsListItem }) {
-	const [selectedChatId, setSelectedChatId] = useAtom(selectedChatIdAtom);
+	const [, setSelectedChatId] = useAtom(selectedChatIdAtom);
+	const [unreadCounts] = useAtom(unreadCountsAtom);
+
+	const unreadCount = unreadCounts[message.id] || 0;
+	const isUnread = unreadCount > 0;
 
 	const contactQuery = useQuery(
 		orpc.whatsapp.getContact.queryOptions({
@@ -51,9 +55,23 @@ export function WhatsappChatsListItem({ message }: { message: ChatsListItem }) {
 						{message.timestamp}
 					</span>
 				</div>
-				<span className="wrap-anywhere line-clamp-2 whitespace-pre-wrap text-muted-foreground text-xs">
-					{message.lastMessageBody}
-				</span>
+				<div className="flex items-center justify-between">
+					<span
+						className={cn(
+							"wrap-anywhere line-clamp-2 whitespace-pre-wrap text-muted-foreground text-xs",
+							{
+								"font-bold text-foreground": isUnread,
+							}
+						)}
+					>
+						{message.lastMessageBody}
+					</span>
+					{isUnread && (
+						<span className="ml-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
+							{unreadCount}
+						</span>
+					)}
+				</div>
 			</div>
 		</div>
 	);
