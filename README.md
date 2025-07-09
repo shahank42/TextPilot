@@ -1,111 +1,77 @@
 # TextPilot
 
-AI co-pilot for your text messages
+WhatsApp client with an AI Co-pilot!
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/shahank42/text-pilot/refs/heads/master/.github/text-pilot.jpg" border="0"></
+    <img src="https://raw.githubusercontent.com/shahank42/text-pilot/refs/heads/master/.github/text-pilot.png" border="0"></
 </p>
 <br />
 
-(yes, that is an alternative client for WhatsApp Web)
+## Features (still in development)
 
-I'm too poor to buy a VPS and host this, so I'm releasing this as a self-hostable solution that you can run on your own machine :-)
+This application provides the following core functionalities:
 
-If you wanna try it out, run with:
+- **QR Code Login**: Easily log in to your WhatsApp account by scanning a QR code, similar to WhatsApp Web.
 
-```bash
-docker compose up -d --build
-```
+- **Send and Receive Messages**: Send and receive text messages directly from the application.
 
-It'll take some time to build since it's using Puppeteer, takes around 5 minutes for a fresh build for me.
+- **Unread Message Indication**: Quickly identify unread conversations with a clear display of new messages.
 
-Make sure porrd 4173 and 3000 are not being used on your device while you run the container!
+- **Quote and Reply**: Quote specific messages and reply to them, maintaining conversational context.
 
-Once the container is up and running, go ahead and visit https://localhost:4173/whatsapp where you should get a QR code.
+# Installation and Usage
 
-(NOTE: If the QR Code isn't getting scanned by WhatsApp on your phone, try switching the website theme to light theme and it should work)
+This project is designed as a self-hostable solution, allowing you to run it directly on your own machine. (I'm too poor to buy a server and host it, so this is the next best option :-P)
 
-Wait while the syncing takes place, and you should be presented with the chat screen.
+## Prerequisites
 
-## What's working
+Before you begin, ensure you have the following installed on your system:
 
-- QR code log in to WhatsApp
-- Send and recieve text messages from WhatsApp
-- Quote and reply to messages
+- **Docker:** This project uses Docker Compose for easy setup and management.
 
----
+## Quick Start
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, ORPC, and more.
+To get the application up and running, follow these steps:
 
-## Features
+1.  **Clone the Repository (if you haven't already):**
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Hono** - Lightweight, performant server framework
-- **oRPC** - End-to-end type-safe APIs with OpenAPI integration
-- **Bun** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
-- **Biome** - Linting and formatting
-- **Tauri** - Build native desktop applications
-- **Turborepo** - Optimized monorepo build system
+    ```bash
+    git clone https://github.com/shahank42/TextPilot
+    cd TextPilot
+    ```
 
-## Getting Started
+2.  **Start the Application:**
 
-First, install the dependencies:
+    Navigate to the root directory of the project in your terminal and run the following command:
 
-```bash
-bun install
-```
+    ```bash
+    docker compose up -d --build
+    ```
 
-## Database Setup
+> [!NOTE]
+> The initial build process may take some time (approximately 5 minutes on a fresh build) as it includes Puppeteer.
 
-This project uses SQLite with Drizzle ORM.
+> [!IMPORTANT]
+> This application utilizes ports `4173` and `3000`. Please ensure these ports are not in use by other applications on your system before starting the Docker containers.
 
-1. Start the local SQLite database:
+## Accessing the Application
 
-```bash
-cd apps/server && bun db:local
-```
+Once the Docker containers are up and running, you can access the application by opening your web browser and navigating to [http://localhost:4173/whatsapp](http://localhost:4173/whatsapp)
 
-2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
+You should be presented with a QR code to link your WhatsApp account.
 
-3. Apply the schema to your database:
+### Troubleshooting QR Code Scanning
 
-```bash
-bun db:push
-```
+If you encounter issues scanning the QR code with WhatsApp on your phone, try switching the website's theme to the light theme within the application. This often resolves scanning difficulties.
 
-Then, run the development server:
+## Usage
 
-```bash
-bun dev
-```
+After successfully scanning the QR code and waiting for the initial syncing process to complete, you will be directed to the chat screen. (For now it's just a QR code slapped on to the page, this flow needs to be enhanced later)
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+# Contributing
 
-## Project Structure
+We welcome contributions to TextPilot! If you're interested in helping improve the project, please refer to our [CONTRIBUTING.md](https://github.com/shahank42/TextPilot/CONTRIBUTING.md) file for detailed guidelines on how to report bugs, suggest features, and submit pull requests.
 
-```
-text-pilot/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono, ORPC)
-```
+# License
 
-## Available Scripts
-
-- `bun dev`: Start all applications in development mode
-- `bun build`: Build all applications
-- `bun dev:web`: Start only the web application
-- `bun dev:server`: Start only the server
-- `bun check-types`: Check TypeScript types across all apps
-- `bun db:push`: Push schema changes to database
-- `bun db:studio`: Open database studio UI
-- `cd apps/server && bun db:local`: Start the local SQLite database
-- `bun check`: Run Biome formatting and linting
-- `cd apps/web && bun desktop:dev`: Start Tauri desktop app in development
-- `cd apps/web && bun desktop:build`: Build Tauri desktop app
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/shahank42/TextPilot/LICENSE) file for details.
