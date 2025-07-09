@@ -13,11 +13,13 @@ export function WhatsappChatMessageBubble({
   isFirstInGroup,
   isLastInGroup,
   onClick,
+  isGroup = false,
 }: {
   message: WAWebJS.Message;
   isFirstInGroup: boolean;
   isLastInGroup: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
+  isGroup?: boolean;
 }) {
   const contactQuery = useQuery(
     orpc.whatsapp.getContact.queryOptions({
@@ -69,14 +71,18 @@ export function WhatsappChatMessageBubble({
       variant={message.fromMe ? "sent" : "received"}
       className={cn({ "-mt-5": !isFirstInGroup })}
     >
-      <ChatBubbleAvatar
-        fallback={getInitials(displayName)}
-        src={pfpQuery.data}
-        className={cn({ invisible: !isLastInGroup })}
-      />
+      {isGroup ? (
+        <ChatBubbleAvatar
+          fallback={getInitials(displayName)}
+          src={pfpQuery.data}
+          className={cn({ invisible: !isLastInGroup })}
+        />
+      ) : (
+        <></>
+      )}
 
       <ChatBubbleMessage
-        className={cn("cursor-pointer", {
+        className={cn("cursor-pointer w-fit max-w-[38rem]", {
           "rounded-tl-none": !isFirstInGroup && !message.fromMe,
           "rounded-tr-none": !isFirstInGroup && message.fromMe,
         })}

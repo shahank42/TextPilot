@@ -47,13 +47,13 @@ export function WhatsappReplyQuote({
           </p>
         </div>
         <Button
-          className="ml-4 cursor-pointer"
+          className="ml-2 size-6 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onClose();
           }}
           size="icon"
-          variant="destructive"
+          variant="ghost"
         >
           <X className="size-4" />
         </Button>
