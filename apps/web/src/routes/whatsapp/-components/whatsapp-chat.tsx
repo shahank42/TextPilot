@@ -73,8 +73,10 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
                   const previousMessage = chat.messages[index - 1];
                   const nextMessage = chat.messages[index + 1];
 
-                  const isFirstInGroup = !previousMessage || previousMessage.from !== message.from;
-                  const isLastInGroup = !nextMessage || nextMessage.from !== message.from;
+                  const isFirstInGroup =
+                    !previousMessage || previousMessage.from !== message.from;
+                  const isLastInGroup =
+                    !nextMessage || nextMessage.from !== message.from;
 
                   return (
                     <WhatsappChatMessageBubble
@@ -87,6 +89,7 @@ export function WhatsappChat({ chat }: { chat: SelectedChatType }) {
                           setReplyingTo(null);
                         else setReplyingTo(message);
                       }}
+                      isGroup={chat.isGroup}
                     />
                   );
                 })}
