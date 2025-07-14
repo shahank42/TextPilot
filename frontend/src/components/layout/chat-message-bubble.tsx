@@ -92,9 +92,11 @@ export function WhatsappChatMessageBubble({
         {!isGroup ? (
           <></>
         ) : !message.isFromMe ? (
-          <span className="text-xs leading-tight text-muted-foreground">
-            {displayName}
-          </span>
+          isFirstInGroup && (
+            <span className="text-xs leading-tight text-muted-foreground">
+              {displayName}
+            </span>
+          )
         ) : (
           <></>
         )}
