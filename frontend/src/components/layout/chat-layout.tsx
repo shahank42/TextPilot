@@ -1,5 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { SidebarInset, SidebarProvider } from "../ui/sidebar";
+import {
+  SidebarInset,
+  SidebarMenuButton,
+  SidebarProvider,
+} from "../ui/sidebar";
 import { ChatsSidebar } from "./chat-sidebar";
 import { getClientsByClientIdChatsByChatIdOptions } from "@/lib/api-client/@tanstack/react-query.gen";
 import { useLocalChats, type ChatItem } from "@/hooks/use-whatsapp-local-chats";
@@ -59,8 +63,9 @@ function ChatsListItem({
   const displayName = contactQuery.data?.name;
 
   return (
-    <div
-      className="flex flex-row items-center gap-4 overflow-x-hidden border-b p-4 text-sm leading-tight last:border-b-0 hover:cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+    <SidebarMenuButton
+      // className="flex flex-row items-center gap-4 overflow-x-hidden p-4 text-sm leading-tight hover:cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      className="py-9 px-4 cursor-pointer"
       onClick={() => setSelectedChatId(item.id)}
     >
       <div className="relative">
@@ -92,6 +97,6 @@ function ChatsListItem({
           </span>
         </div>
       </div>
-    </div>
+    </SidebarMenuButton>
   );
 }
