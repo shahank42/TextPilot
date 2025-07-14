@@ -35,7 +35,7 @@ export function WhatsappChatMessageBubble({
       )} */}
 
       <ChatBubbleMessage
-        className={cn("cursor-pointer w-fit max-w-[38rem] py-1", {
+        className={cn("cursor-pointer w-fit max-w-[38rem] py-1 text-left", {
           "rounded-tl-none": !isFirstInGroup && !message.isFromMe,
           "rounded-tr-none": !isFirstInGroup && message.isFromMe,
         })}

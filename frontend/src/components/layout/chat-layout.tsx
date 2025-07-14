@@ -79,7 +79,7 @@ function ChatsListItem({
             {item.timestamp}
           </span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between text-left">
           <span
             className={cn(
               "wrap-anywhere line-clamp-2 whitespace-pre-wrap text-muted-foreground text-xs"
