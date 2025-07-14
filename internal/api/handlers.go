@@ -219,6 +219,14 @@ func (a *API) sendMessage(w http.ResponseWriter, r *http.Request) (interface{}, 
 		return nil, ErrInternalServerError // This indicates a logic error
 	}
 
+	senderJID, err := types.ParseJID(sentMessage.SenderJID)
+	if err != nil {
+		log.Error().Err(err).Str("clientID", clientID).Str("messageID", resp.ID).Msg("Failed to parse sender JID")
+		return nil, ErrInternalServerError // Generic error for underlying system failures
+	}
+
+	sentMessage.SenderJID = fmt.Sprintf("%s@%s", senderJID.User, senderJID.Server)
+
 	log.Info().Str("clientID", clientID).Str("messageID", resp.ID).Msg("Message sent successfully")
 	return sentMessage, nil // Return the sent message on success
 }
@@ -382,6 +390,8 @@ func (a *API) getChat(w http.ResponseWriter, r *http.Request) (interface{}, *API
 			log.Error().Err(err).Str("clientID", clientID).Str("chatID", chatID).Msg("Failed to get group info")
 			// Continue without group-specific details if fetching fails.
 		} else {
+			chat.Name = groupInfo.Name
+
 			if groupInfo.Topic != "" {
 				chat.Description = groupInfo.Topic
 			}

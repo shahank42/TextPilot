@@ -13,8 +13,11 @@ import { useState } from "react";
 import { messageMapAtom } from "@/lib/atoms";
 import { WhatsappChatMessageBubble } from "./chat-message-bubble";
 import { WhatsappChatHeader } from "./chat-header";
-import { useMutation } from "@tanstack/react-query";
-import { postClientsByClientIdMessagesSendMutation } from "@/lib/api-client/@tanstack/react-query.gen";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  getClientsByClientIdChatsByChatIdOptions,
+  postClientsByClientIdMessagesSendMutation,
+} from "@/lib/api-client/@tanstack/react-query.gen";
 import { type ModelsSendMessageRequest } from "@/lib/api-client";
 import { useImmerAtom } from "jotai-immer";
 
@@ -31,6 +34,14 @@ export const Chat = ({
 
   const [inputValue, setInputValue] = useState("");
   const replyingTo = false;
+
+  const contactQuery = useQuery({
+    ...getClientsByClientIdChatsByChatIdOptions({
+      path: { clientID: clientId, chatID: chatId as string },
+    }),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   const sendMessageMutation = useMutation({
     mutationFn: postClientsByClientIdMessagesSendMutation().mutationFn,
@@ -68,6 +79,7 @@ export const Chat = ({
                 return (
                   <WhatsappChatMessageBubble
                     key={message.id}
+                    clientId={clientId}
                     message={message}
                     isFirstInGroup={isFirstInGroup}
                     isLastInGroup={isLastInGroup}
@@ -77,7 +89,7 @@ export const Chat = ({
                       // else
                       // setReplyingTo(message);
                     }}
-                    isGroup={false}
+                    isGroup={contactQuery.data?.isGroup}
                   />
                 );
               })}
