@@ -10,10 +10,13 @@ import { CornerDownLeft } from "lucide-react";
 import { ChatMessageList } from "../ui/chat/chat-message-list";
 import { ChatInput } from "../ui/chat/chat-input";
 import { useState } from "react";
-import { useAtom } from "jotai";
 import { messageMapAtom } from "@/lib/atoms";
 import { WhatsappChatMessageBubble } from "./chat-message-bubble";
 import { WhatsappChatHeader } from "./chat-header";
+import { useMutation } from "@tanstack/react-query";
+import { postClientsByClientIdMessagesSendMutation } from "@/lib/api-client/@tanstack/react-query.gen";
+import { type ModelsSendMessageRequest } from "@/lib/api-client";
+import { useImmerAtom } from "jotai-immer";
 
 export const Chat = ({
   clientId,
@@ -22,12 +25,19 @@ export const Chat = ({
   clientId: string;
   chatId: string;
 }) => {
-  const [messagesMap] = useAtom(messageMapAtom);
+  const [messagesMap, setMessagesMap] = useImmerAtom(messageMapAtom);
 
   const chat = messagesMap.get(chatId)!;
 
   const [inputValue, setInputValue] = useState("");
   const replyingTo = false;
+
+  const sendMessageMutation = useMutation({
+    mutationFn: postClientsByClientIdMessagesSendMutation().mutationFn,
+    onSettled: () => {
+      setInputValue("");
+    },
+  });
 
   return (
     <div className="flex h-svh w-full flex-col">
@@ -88,7 +98,33 @@ export const Chat = ({
               )} */}
             <form
               className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
-              // onSubmit={(e) => sendMessageMutation.mutate(e)}
+              onSubmit={async (e) => {
+                e.preventDefault();
+
+                if (!(inputValue.trim() && chatId)) return;
+
+                const messageToSend: ModelsSendMessageRequest = {
+                  jid: chatId,
+                  text: inputValue,
+                };
+
+                const sentMessage = await sendMessageMutation.mutateAsync({
+                  path: { clientID: clientId },
+                  body: messageToSend,
+                });
+
+                if (messagesMap.has(sentMessage.chatJID as string)) {
+                  setMessagesMap((draft) => {
+                    draft.get(sentMessage.chatJID as string)!.push(sentMessage);
+                  });
+                } else {
+                  setMessagesMap((draft) => {
+                    draft.set(sentMessage.chatJID as string, [sentMessage]);
+                  });
+                }
+
+                console.log("SENT", sentMessage);
+              }}
             >
               <ChatInput
                 className="min-h-12 resize-none rounded-lg border-0 bg-background p-3 shadow-none focus-visible:ring-0"
