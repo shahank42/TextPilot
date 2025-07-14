@@ -50,8 +50,6 @@ function ChatsListItem({
 }) {
   const [, setSelectedChatId] = useAtom(selectedChatIdAtom);
 
-  console.log({ path: { clientID: clientId, chatID: item.id } });
-
   const contactQuery = useQuery({
     ...getClientsByClientIdChatsByChatIdOptions({
       path: { clientID: clientId, chatID: item.id },

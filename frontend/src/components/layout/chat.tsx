@@ -52,17 +52,16 @@ export const Chat = ({
 
   return (
     <div className="flex h-svh w-full flex-col">
-      <WhatsappChatHeader clientId={clientId} chatId={chatId} />
-
       <ResizablePanelGroup
         className="h-[calc(100dvh-69px)]"
         direction="horizontal"
       >
-        <ResizablePanel className="flex h-[calc(100dvh-69px)] flex-col">
+        <ResizablePanel className="flex h-[calc(100dvh-69px+61.45px)] flex-col">
+          <WhatsappChatHeader clientId={clientId} chatId={chatId} />
           <ScrollArea
             className={cn({
               "h-[calc(100dvh-69px-143px+8px)]": !replyingTo,
-              "h-[calc(100dvh-69px-32px-147px-69px+32px)] ": replyingTo,
+              // "h-[calc(100dvh-69px-32px-147px-69px+32px)] ": replyingTo,
             })}
           >
             <ChatMessageList>
@@ -99,7 +98,7 @@ export const Chat = ({
           <div
             className={cn("flex w-full flex-col border-t px-4 pt-4 pb-4", {
               "h-[calc(69px+147px-73px-8px)]": !replyingTo,
-              "h-[calc(69px+147px+32px-32px)] justify-between": replyingTo,
+              // "h-[calc(69px+147px+32px-32px)] justify-between": replyingTo,
             })}
           >
             {/* {replyingTo && (

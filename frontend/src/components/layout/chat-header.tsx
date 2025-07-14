@@ -24,36 +24,34 @@ export function WhatsappChatHeader({
 
   return (
     // <ExpandableChatHeader className="">
-      <div className="flex w-full items-center justify-between gap-2 border-b py-3 px-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Avatar className="size-8">
-              <AvatarImage alt={displayName} src={contactQuery.data?.pfp || ""} />
-              <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-            </Avatar>
+    <div className="flex w-full items-center justify-between gap-2 border-b py-3 px-4">
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <Avatar className="size-8">
+            <AvatarImage alt={displayName} src={contactQuery.data?.pfp || ""} />
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+          </Avatar>
 
-            {/* TODO: do something about the ephemerally online indicator */}
-            <span className="-end-0.5 -bottom-0.5 absolute size-3 rounded-full border-2 border-background bg-emerald-500">
-              <span className="sr-only">Online</span>
-            </span>
-          </div>
+          {/* TODO: do something about the ephemerally online indicator */}
+          <span className="-end-0.5 -bottom-0.5 absolute size-3 rounded-full border-2 border-background bg-emerald-500">
+            <span className="sr-only">Online</span>
+          </span>
+        </div>
 
-          <div className="flex flex-col">
-            <span className="font-medium text-xl">
-              {displayName}
-            </span>
-            {/* <span className="text-xs">
+        <div className="flex flex-col">
+          <span className="font-medium text-xl">{displayName}</span>
+          {/* <span className="text-xs">
               {contactQuery.isPending
                 ? "Loading phone number..."
                 : contactQuery.isError
                   ? "Error loading phone number"
                   : contactQuery.data.isGroup ? "Group" : "Chat"}
             </span> */}
-          </div>
         </div>
-
-        {/* <ModeToggle /> */}
       </div>
+
+      <ModeToggle />
+    </div>
     // </ExpandableChatHeader>
   );
 }

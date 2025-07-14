@@ -368,8 +368,10 @@ func (a *API) getChat(w http.ResponseWriter, r *http.Request) (interface{}, *API
 	// Determine if it's a group chat by checking the JID server.
 	isGroup := parsedChatJID.Server == "g.us"
 
-	// Use PushName or FullName if available, otherwise default to the JID.
-	name := parsedChatJID.String()
+	modifiedJID := fmt.Sprintf("%s@%s", parsedChatJID.User, parsedChatJID.Server)
+
+	// Use PushName or FullName if available, otherwise default to the *modified* JID.
+	name := modifiedJID
 	if contactInfo.BusinessName != "" {
 		name = contactInfo.BusinessName
 	} else if contactInfo.FullName != "" {
@@ -377,7 +379,7 @@ func (a *API) getChat(w http.ResponseWriter, r *http.Request) (interface{}, *API
 	}
 
 	chat := models.Chat{
-		JID:     parsedChatJID.String(),
+		JID:     modifiedJID,
 		Name:    name,
 		IsGroup: isGroup,
 		Pfp:     pfpURL,

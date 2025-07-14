@@ -40,14 +40,12 @@ export function WhatsappChatMessageBubble({
       variant={message.isFromMe ? "sent" : "received"}
       className={cn({ "-mt-5": !isFirstInGroup })}
     >
-      {isGroup ? (
+      {isGroup && (
         <ChatBubbleAvatar
           fallback={getInitials(displayName)}
           src={contactQuery.data?.pfp}
           className={cn({ invisible: !isLastInGroup })}
         />
-      ) : (
-        <></>
       )}
 
       <ChatBubbleMessage
