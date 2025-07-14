@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Node / Bun
+node_modules
+frontend/node_modules
+frontend/dist
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.lockb
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+textpilot-whatsmeow-server
+
+# Sessions
+sessions/
+
+# IDE / OS specific
+.vscode/
+.idea/
+.DS_Store
+*.swp

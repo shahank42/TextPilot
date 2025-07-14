@@ -1,0 +1,29 @@
+# Docker Compose file for running the TextPilot-Whatsmeow application.
+# Version 3.8 is a modern and stable version of the Compose file format.
+version: '3.8'
+
+# Define the services (containers) that make up the application.
+services:
+  # The main application service.
+  app:
+    # Instructs Docker Compose to build the image from the Dockerfile
+    # located in the current directory (".").
+    build: .
+    # Assign a specific name to the container for easier management.
+    container_name: textpilot-app
+    # Automatically restart the container unless it is explicitly stopped.
+    # This is useful for production to recover from crashes.
+    restart: unless-stopped
+    # Map port 8082 on the host machine to port 8082 inside the container.
+    ports:
+      - "8082:8082"
+    # Mount the local './sessions' directory into the '/app/sessions' directory
+    # inside the container. This ensures that session data is persisted on the
+    # host machine, even if the container is removed.
+    volumes:
+      # Use a named volume for session data for portability and better management.
+      - sessions-data:/app/sessions
+
+# Define the named volume.
+volumes:
+  sessions-data:

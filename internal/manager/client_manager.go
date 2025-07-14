@@ -13,12 +13,14 @@ import (
 type ClientManager struct {
 	clients map[string]*whatsapp.WhatsappClient
 	mutex   sync.Mutex
+	sessionDir string
 }
 
 // NewClientManager creates a new ClientManager.
-func NewClientManager() *ClientManager {
+func NewClientManager(sessionDir string) *ClientManager {
 	return &ClientManager{
 		clients: make(map[string]*whatsapp.WhatsappClient),
+		sessionDir: sessionDir,
 	}
 }
 
@@ -45,43 +47,45 @@ func (m *ClientManager) Remove(clientID string) {
 }
 
 // ReloadSessions scans the sessions directory and reloads existing client sessions.
+// It iterates through subdirectories in the "sessions" directory, attempts to create
+// a WhatsappClient for each, and reconnects them.
 func (m *ClientManager) ReloadSessions() {
-	log.Info().Msg("Attempting to reload existing sessions...")
-	sessionDir := "sessions"
-	files, err := os.ReadDir(sessionDir)
+	log.Info().Msg("attempting to reload existing sessions")
+	
+	files, err := os.ReadDir(m.sessionDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Info().Msg("Sessions directory does not exist, no sessions to reload.")
+			log.Info().Msg("sessions directory does not exist, no sessions to reload")
 			return
 		}
-		log.Error().Err(err).Msg("Failed to read sessions directory")
+		log.Error().Err(err).Msg("failed to read sessions directory")
 		return
 	}
 
 	for _, file := range files {
 		if file.IsDir() {
 			clientID := file.Name()
-			log.Info().Str("clientID", clientID).Msg("Reloading session")
-			dbPath := filepath.Join(sessionDir, clientID, "session.db")
+			log.Info().Str("clientID", clientID).Msg("reloading session")
+			dbPath := filepath.Join(m.sessionDir, clientID, "session.db")
 
 			// Check if the session database file actually exists.
 			if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-				log.Warn().Str("clientID", clientID).Msg("Session directory found but session.db is missing, skipping.")
+				log.Warn().Str("clientID", clientID).Msg("session directory found but session.db is missing, skipping")
 				continue
 			}
 
 			waClient, err := whatsapp.NewWhatsappClient(dbPath)
 			if err != nil {
-				log.Error().Err(err).Str("clientID", clientID).Msg("Failed to create WhatsApp client for reloading")
+				log.Error().Err(err).Str("clientID", clientID).Msg("failed to create WhatsApp client for reloading")
 				continue
 			}
 
 			m.Add(clientID, waClient)
 
 			go func(client *whatsapp.WhatsappClient, id string) {
-				log.Info().Str("clientID", id).Msg("Attempting to reconnect reloaded client")
+				log.Info().Str("clientID", id).Msg("attempting to reconnect reloaded client")
 				if err := client.Connect(); err != nil {
-					log.Error().Err(err).Str("clientID", id).Msg("Failed to connect reloaded client")
+					log.Error().Err(err).Str("clientID", id).Msg("failed to connect reloaded client")
 				}
 			}(waClient, clientID)
 		}

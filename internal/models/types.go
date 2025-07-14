@@ -1,5 +1,7 @@
 package models
 
+// Package models defines the data structures used across the application, including API requests, responses, and event formats.
+
 // SendMessageRequest represents the request body for sending a message.
 // @Description Request body for sending a message.
 type SendMessageRequest struct {

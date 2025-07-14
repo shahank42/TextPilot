@@ -3,8 +3,15 @@ import { qrCodeAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 import QRCode from "react-qr-code";
 import { ChatLayout } from "./chat-layout";
+import Header from "../header";
 
-export const ClientLayout = ({ clientId, showQR  }: { clientId: string, showQR: boolean }) => {
+export const ClientLayout = ({
+  clientId,
+  showQR,
+}: {
+  clientId: string;
+  showQR: boolean;
+}) => {
   const { whatsappConnected } = useWhatsappEvent(clientId);
 
   const [qrCode] = useAtom(qrCodeAtom);
@@ -15,6 +22,7 @@ export const ClientLayout = ({ clientId, showQR  }: { clientId: string, showQR: 
         <ChatLayout clientId={clientId} />
       ) : (
         <div className="flex flex-col h-full">
+          <Header />
           <span>You're client {clientId}</span>
           <div className="flex w-full h-full justify-center items-center">
             {qrCode !== null ? <QRCode value={qrCode} /> : <>Loading QR...</>}
