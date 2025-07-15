@@ -1,0 +1,390 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/clients/connect": {
+            "post": {
+                "description": "Initializes a new WhatsApp client and returns a server-generated clientID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Connect a new WhatsApp client",
+                "responses": {
+                    "200": {
+                        "description": "Client ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{clientID}/chats": {
+            "get": {
+                "description": "Retrieves a list of all contacts and groups (chats) associated with a specific client.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Get all chats for a client",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client ID",
+                        "name": "clientID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of chats retrieved successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Chat"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Client not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{clientID}/chats/{chatID}": {
+            "get": {
+                "description": "Retrieves detailed information for a specific chat, including participants for groups.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Get chat details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client ID",
+                        "name": "clientID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chat JID (e.g., 1234567890@s.whatsapp.net or 123456-7890@g.us)",
+                        "name": "chatID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chat details retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Chat"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid chat ID format",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Client or chat not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{clientID}/disconnect": {
+            "post": {
+                "description": "Disconnects the specified client, closes the WhatsApp session, and cleans up resources.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Disconnect a WhatsApp client",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client ID",
+                        "name": "clientID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Client not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{clientID}/events": {
+            "get": {
+                "description": "Establishes a Server-Sent Events (SSE) connection to stream real-time WhatsApp events (e.g., QR codes, messages, connection status).",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Stream real-time events for a client",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client ID",
+                        "name": "clientID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event stream established",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Client not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Streaming unsupported or Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{clientID}/messages/send": {
+            "post": {
+                "description": "Sends a text message to a specified JID (Jabber ID) for a given client.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Send a text message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client ID",
+                        "name": "clientID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Message details",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SendMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body or JID format",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Client not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.APIError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Chat": {
+            "description": "Represents a single WhatsApp chat (one-on-one or group).",
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Description for group chats",
+                    "type": "string",
+                    "example": "Group for project updates"
+                },
+                "isGroup": {
+                    "description": "Indicates if the chat is a group",
+                    "type": "boolean"
+                },
+                "jid": {
+                    "description": "JID of the chat",
+                    "type": "string",
+                    "example": "1234567890@s.whatsapp.net"
+                },
+                "name": {
+                    "description": "Display name of the chat",
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "participants": {
+                    "description": "List of participants for group chats",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Participant"
+                    }
+                },
+                "pfp": {
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "models.Message": {
+            "description": "Represents a single WhatsApp message.",
+            "type": "object",
+            "properties": {
+                "chatJID": {
+                    "description": "JID of the chat the message belongs to",
+                    "type": "string",
+                    "example": "1234567890@s.whatsapp.net"
+                },
+                "id": {
+                    "description": "Unique ID of the message",
+                    "type": "string",
+                    "example": "ABCD123"
+                },
+                "isFromMe": {
+                    "description": "Indicates if the message was sent by the client",
+                    "type": "boolean"
+                },
+                "senderJID": {
+                    "description": "JID of the sender",
+                    "type": "string",
+                    "example": "0987654321@s.whatsapp.net"
+                },
+                "text": {
+                    "description": "Text content of the message",
+                    "type": "string",
+                    "example": "Hello World!"
+                },
+                "timestamp": {
+                    "description": "Unix timestamp of the message",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Participant": {
+            "description": "Represents a single participant in a group chat.",
+            "type": "object",
+            "properties": {
+                "isAdmin": {
+                    "description": "Indicates if the participant is an admin",
+                    "type": "boolean"
+                },
+                "jid": {
+                    "description": "JID of the participant",
+                    "type": "string",
+                    "example": "1234567890@s.whatsapp.net"
+                }
+            }
+        },
+        "models.SendMessageRequest": {
+            "description": "Request body for sending a message.",
+            "type": "object",
+            "properties": {
+                "jid": {
+                    "description": "JID of the recipient",
+                    "type": "string",
+                    "example": "1234567890@s.whatsapp.net"
+                },
+                "text": {
+                    "description": "Text content of the message",
+                    "type": "string",
+                    "example": "Hello from TextPilot!"
+                }
+            }
+        }
+    }
+}

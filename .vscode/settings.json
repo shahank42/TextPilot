@@ -10,5 +10,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit",
     "source.organizeImports.biome": "explicit"
+  },
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
   }
 }

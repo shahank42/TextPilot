@@ -1,80 +1,53 @@
-FROM oven/bun:1 AS builder
+# Stage 1: Frontend Builder
+FROM oven/bun:latest AS frontend-builder
 
-WORKDIR /usr/src/app
+WORKDIR /app/frontend
 
-# First, copy only the package.json files to leverage Docker caching
-COPY package.json bun.lock turbo.json ./
-COPY apps/server/package.json ./apps/server/
-COPY apps/web/package.json ./apps/web/
-
-# Install all dependencies
+# Copy dependency files and install
+COPY frontend/package.json frontend/bun.lock ./
 RUN bun install
 
-# Copy the rest of the source code
-COPY . .
-
-# Build the applications
+# Copy the rest of the frontend code and build
+COPY frontend/ ./
 RUN bun run build
 
-# Prune dev dependencies
-RUN rm -rf node_modules
-RUN bun install --production
+# Stage 2: Backend Builder
+FROM golang:alpine AS backend-builder
 
-# Use a smaller, production-ready image
-FROM oven/bun:1 AS production
+WORKDIR /app
 
-# Install dependencies for puppeteer
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcairo2 \
-    libcups2 \
-    libdbus-1-3 \
-    libexpat1 \
-    libfontconfig1 \
-    libgbm1 \
-    libgcc1 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libstdc++6 \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    lsb-release \
-    wget \
-    xdg-utils \
-    --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+# Copy Go module files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
 
-WORKDIR /usr/src/app
+# Copy the rest of the backend source code
+COPY . .
 
-# Copy the pruned dependencies and built applications from the builder stage
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/apps/server/dist ./apps/server/dist
-COPY --from=builder /usr/src/app/apps/web/dist ./apps/web/dist
-COPY --from=builder /usr/src/app/apps/server/package.json ./apps/server/package.json
-COPY --from=builder /usr/src/app/apps/web/package.json ./apps/web/package.json
-COPY --from=builder /usr/src/app/package.json ./
-COPY --from=builder /usr/src/app/entrypoint.sh ./
+# Copy built frontend assets from the first stage
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-EXPOSE 3000 4173
+# Install CGO dependencies for go-sqlite3
+RUN apk add --no-cache gcc musl-dev
 
-ENTRYPOINT ["./entrypoint.sh"]
+# Build the Go application with CGO enabled
+RUN CGO_ENABLED=1 go build -ldflags="-w -s" -o /app/server .
+
+# Stage 3: Final Production Image
+FROM alpine:latest
+
+WORKDIR /app
+
+# Create a non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy the compiled binary from the backend-builder stage
+COPY --from=backend-builder /app/server .
+
+# Switch to the non-root user
+USER appuser
+
+# Expose the application port
+EXPOSE 8082
+
+# Run the application
+ENTRYPOINT ["./server"]
